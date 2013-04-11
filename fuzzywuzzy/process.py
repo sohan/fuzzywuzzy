@@ -33,6 +33,28 @@ import utils
 # Find Best Matchs In List Of Choices #
 #######################################
 
+def extractFirst(query, choices, score_cutoff, processor=None, scorer=None):
+    #extracts first match over score_cutoff from choices
+    if choices is None or len(choices) == 0:
+        return []
+
+    # default, turn whatever the choice is into a string
+    if processor is None:
+        processor = lambda x: utils.asciidammit(x)
+
+    # default: wratio
+    if scorer is None:
+        scorer = WRatio
+
+    for choice in choices:
+        processed = processor(choice)
+        score = scorer(query, processed)
+        tuple_ = (choice, score)
+        if score >= score_cutoff:
+            return tuple_
+
+    return None
+
 def extract(query, choices, processor=None, scorer=None, limit=5):
 
     # choices       = a list of objects we are attempting to extract values from
